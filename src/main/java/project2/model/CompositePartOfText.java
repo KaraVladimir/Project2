@@ -1,5 +1,7 @@
 package project2.model;
 
+import project2.model.PartOfText;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -7,33 +9,37 @@ import java.util.regex.Pattern;
 /**
  * @author kara.vladimir2@gmail.com.
  */
-public abstract class CompositePartOfText implements PartOfText {
-    protected List<PartOfText> list;
-    StringBuilder stringBuilder = new StringBuilder();
+public interface CompositePartOfText extends PartOfText {
 
-
-    public CompositePartOfText() {
-        this.list = new ArrayList<>();
-    }
-
+    public List<PartOfText> getList();
 
     @Override
-    public StringBuilder getText(StringBuilder stringBuilder) {
-        list.stream().forEach(item->item.getText(stringBuilder));
+    default StringBuilder getText(StringBuilder stringBuilder) {
+        getList().stream().forEach(item->item.getText(stringBuilder));
         return stringBuilder;
     }
 
-    public abstract void parse();
-
-    public boolean addPart(PartOfText partOfText) {
-        return list.add(partOfText);
+    @Override
+    default String getText() {
+        return getText(new StringBuilder()).toString();
     }
 
-    public PartOfText getPart(int i) {
-        return list.get(i);
+    void parse(CharSequence charSequence);
+
+    @Override
+    default boolean isComposite() {
+        return true;
     }
 
-    public boolean removePart(PartOfText partOfText) {
-        return list.remove(partOfText);
+    default boolean addPart(PartOfText partOfText) {
+        return getList().add(partOfText);
+    }
+
+    default PartOfText getPart(int i) {
+        return getList().get(i);
+    }
+
+    default boolean removePart(PartOfText partOfText) {
+        return getList().remove(partOfText);
     }
 }
